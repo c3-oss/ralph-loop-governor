@@ -1,0 +1,5 @@
+interface:
+  display_name: "Repo Commit And Push"
+  short_description: "Create focused commits and push only when authorized."
+  default_prompt: "$repo-commit-and-push commit the validated changes."
+

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Ralph Loop Governor"
+  short_description: "Govern long-running Claude Ralph Loop implementation runs."
+  default_prompt: "$ralph-loop-governor implement <feature goal>."
+

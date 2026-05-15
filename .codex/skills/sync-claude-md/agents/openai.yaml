@@ -1,0 +1,5 @@
+interface:
+  display_name: "Sync Claude Md"
+  short_description: "Keep Claude Code guidance aligned with repo instructions."
+  default_prompt: "$sync-claude-md sync Claude-facing guidance after instruction changes."
+

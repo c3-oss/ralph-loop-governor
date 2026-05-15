@@ -1,0 +1,5 @@
+interface:
+  display_name: "Parallel Delegation"
+  short_description: "Split safe independent work across native subagents."
+  default_prompt: "$parallel-delegation decompose this task into safe subagent lanes."
+
