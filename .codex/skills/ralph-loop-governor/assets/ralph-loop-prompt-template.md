@@ -68,6 +68,21 @@ Before Done, run or explicitly classify the repository's required gates:
 git diff --check
 ```
 
+## Final Stabilization Wait
+
+Do not output `RALPH_DONE` immediately after closing a correction or making a commit. Missing stabilization evidence is a false completion.
+
+Before outputting `RALPH_DONE`, complete the final stabilization wait:
+
+1. Confirm there are no open blocking corrections and no unexplained dirty worktree changes.
+2. Run or record the required gates.
+3. Perform five consecutive clean cycles:
+   - sleep exactly 180 seconds;
+   - reread `correction-queue.md`, `gates.md`, `status.md`, `git status --short --branch`, and recent commits;
+   - if any blocker, failed gate, stale evidence, new commit, or unexplained dirty worktree state appears, fix it and reset the cycle count to zero;
+   - otherwise count that as one clean cycle.
+4. Only after five clean cycles, minimum 15 minutes, may you output `RALPH_DONE`.
+
 ## Completion Rule
 
 Only satisfy the completion promise when the statement is true. This run assumes Claude Code has the Ralph Loop plugin installed. With that plugin, completion means outputting exactly:
@@ -76,4 +91,4 @@ Only satisfy the completion promise when the statement is true. This run assumes
 <promise>RALPH_DONE</promise>
 ```
 
-when every lane is implemented, every blocking correction is closed with evidence, required gates are green or classified, and the worktree state is documented.
+when every lane is implemented, every blocking correction is closed with evidence, required gates are green or classified, the final stabilization wait has completed, and the worktree state is documented.

@@ -29,7 +29,7 @@ If your Claude Code installation exposes the plugin command as `/ralph-loop`, us
 Correction restart:
 
 ```text
-/ralph-loop:ralph-loop "Read @docs/roadmap/<feature>/ralph-loop-prompt.md, @docs/roadmap/<feature>/correction-queue.md, and @docs/roadmap/<feature>/gates.md. Close every blocking correction with evidence, wait 5 minutes, reread the correction queue, and repeat until no blocking correction remains open." --max-iterations 20 --completion-promise RALPH_DONE
+/ralph-loop:ralph-loop "Read @docs/roadmap/<feature>/ralph-loop-prompt.md, @docs/roadmap/<feature>/correction-queue.md, and @docs/roadmap/<feature>/gates.md. Close every blocking correction with code, tests, and evidence. If no blocking correction remains, run the mandatory final stabilization wait: five clean cycles of sleep 180 seconds, then reread correction queue, gates, status, git status, and recent commits. Any change, open blocker, failed gate, stale evidence, new commit, or unexplained dirty worktree resets the five-cycle count to zero. Output RALPH_DONE only after all five cycles stay clean." --max-iterations 20 --completion-promise RALPH_DONE
 ```
 
 Keep natural-language prompts quoted.
@@ -55,6 +55,24 @@ Each cycle:
 7. Reset the no-change streak on implementation changes.
 
 Keep treating Ralph as active until `RALPH_DONE` is detected, the user stops the run, or three configured idle checks show no implementation change and final gates begin.
+
+## Final Stabilization Wait
+
+Ralph must not emit `RALPH_DONE` immediately after it believes the work is complete. The executor can make a change, believe the run is complete, and then miss stale evidence, gate drift, or newly written governor corrections.
+
+When Ralph believes there are no open blocking corrections:
+
+1. Commit or explicitly document all WIP. Do not begin stabilization with an unexplained dirty worktree.
+2. Run and record the required focused gates for the run.
+3. Start a clean-cycle counter at zero.
+4. Repeat until the counter reaches five:
+   - sleep exactly 180 seconds;
+   - reread `correction-queue.md`, `gates.md`, `status.md`, `git status --short --branch`, and recent commits;
+   - if there is any open blocker, dirty or unexplained worktree state, new commit, failed gate, stale evidence, or contradictory status, fix it and reset the counter to zero;
+   - if everything is still clean and consistent, increment the counter by one.
+5. Only after five consecutive clean cycles, which is at least 15 minutes, may Ralph emit `<promise>RALPH_DONE</promise>`.
+
+Codex must reject `RALPH_DONE` if this five-cycle stabilization evidence is missing, shorter than 15 minutes, or reset conditions were ignored.
 
 ## Files For Each Feature
 
@@ -147,6 +165,7 @@ Ralph can satisfy `<promise>RALPH_DONE</promise>` only when:
 - no blocking correction remains open;
 - required gates are green or classified;
 - required E2E passed when applicable;
+- the final stabilization wait completed five consecutive clean stabilization cycles with reset conditions respected;
 - the worktree state is documented;
 - Codex final review has no critical unresolved findings.
 

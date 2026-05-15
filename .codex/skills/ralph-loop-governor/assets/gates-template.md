@@ -29,5 +29,5 @@ Add domain-specific gates required by local architecture, release, security, or 
 - [ ] No open blocking corrections.
 - [ ] Required domain gates passed or blockers are documented.
 - [ ] Security/dependency audit output classified when applicable.
+- [ ] Final stabilization wait completed: five consecutive clean cycles of `sleep 180 seconds`, at least 15 minutes total.
 - [ ] Final Codex review completed.
-

@@ -14,6 +14,10 @@ Current lane: <lane id>
 Current HEAD: <sha>
 No-change streak: 0
 Ralph active: yes | no
+Final stabilization wait: not-started | running | reset | complete
+Clean stabilization cycles: 0/5
+Stabilization started:
+Stabilization last check:
 
 ## Lane Status
 
@@ -31,7 +35,12 @@ Ralph active: yes | no
 | Command | Result | Notes |
 | --- | --- | --- |
 
+## Final Stabilization Wait
+
+| Cycle | Timestamp | Result | Reset Reason | Notes |
+| --- | --- | --- | --- | --- |
+| 1 | | clean | | |
+
 ## Decisions
 
 - <timestamp>: <decision>
-

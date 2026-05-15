@@ -8,7 +8,7 @@ The workflow is intentionally tool-light:
 - Claude/Ralph owns long-running implementation throughput.
 - Reviewer agents inspect the work during the run, not only after the executor claims Done.
 - Blocking findings become correction queue items with acceptance criteria and evidence.
-- Done requires lane evidence, closed corrections, and gate results.
+- Done requires lane evidence, closed corrections, gate results, and a final stabilization wait with five clean cycles of `sleep 180 seconds`.
 
 ## What Is Included
 
@@ -83,10 +83,12 @@ Then run the executor in Claude/Ralph:
 
 This command requires the [Ralph Loop plugin](https://claude.com/plugins/ralph-loop) in Claude Code.
 
+Before the executor emits `RALPH_DONE`, it must complete a final stabilization wait: five consecutive clean cycles of `sleep 180 seconds`, then reread correction queue, gates, status, `git status --short --branch`, and recent commits. Any open blocker, failed gate, stale evidence, new commit, or unexplained dirty worktree resets the count to zero.
+
 When corrections are needed:
 
 ```text
-/ralph-loop:ralph-loop "Read @docs/roadmap/<feature>/ralph-loop-prompt.md, @docs/roadmap/<feature>/correction-queue.md, and @docs/roadmap/<feature>/gates.md. Close every blocking correction with evidence, wait 5 minutes, reread the correction queue, and repeat until no blocking correction remains open." --max-iterations 20 --completion-promise RALPH_DONE
+/ralph-loop:ralph-loop "Read @docs/roadmap/<feature>/ralph-loop-prompt.md, @docs/roadmap/<feature>/correction-queue.md, and @docs/roadmap/<feature>/gates.md. Close every blocking correction with code, tests, and evidence. If no blocking correction remains, run the mandatory final stabilization wait: five clean cycles of sleep 180 seconds, then reread correction queue, gates, status, git status, and recent commits. Any change, open blocker, failed gate, stale evidence, new commit, or unexplained dirty worktree resets the five-cycle count to zero. Output RALPH_DONE only after all five cycles stay clean." --max-iterations 20 --completion-promise RALPH_DONE
 ```
 
 ## Adaptation Checklist
@@ -96,3 +98,4 @@ When corrections are needed:
 - Keep reviewer agents read-only by default.
 - Keep `.codex/skills/` as the canonical skill home. `.claude/agents/` mirrors specialists for Claude Code.
 - Do not treat an executor's Done signal as sufficient. The governor must verify evidence and gates.
+- Reject Done without documented final stabilization wait evidence: five consecutive clean cycles, at least 15 minutes total, with reset conditions respected.

@@ -20,6 +20,7 @@ Use this agent after Ralph or Codex has landed large functional patches and the 
 - Preserve behavior and tests; do not broaden the refactor.
 - Keep invariants visible by extracting small helpers/modules rather than hiding checks in generic abstraction.
 - Run focused tests, typecheck, lint, or equivalent checks for the touched area when practical.
+- If asked to assess final readiness, do not mark the run ready without final stabilization evidence: five cycles of `sleep 180 seconds`, then reread correction queue, gates, status, git status, and recent commits.
 - Expect other agents may be editing in parallel; do not revert unrelated work.
 
 ## Expected Output
@@ -28,4 +29,3 @@ Use this agent after Ralph or Codex has landed large functional patches and the 
 - behavior-preserving refactor summary
 - validation commands and results
 - remaining complexity or follow-up risk
-

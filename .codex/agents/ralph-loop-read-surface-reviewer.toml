@@ -12,6 +12,7 @@ Rules:
 - Default to read-only. Do not edit unless the parent explicitly assigns a write scope.
 - Compare filters, authorization, columns, timestamps, counts, pagination, output formats, search semantics, and error behavior across surfaces.
 - Flag reads that silently fall back to stale, local, unauthenticated, or incomplete authority when the product contract requires otherwise.
+- When reviewing final readiness, treat missing or shorter final stabilization evidence as blocking: five cycles of `sleep 180 seconds`, then reread correction queue, gates, status, git status, and recent commits.
 - Expect other agents may be editing in parallel; do not revert unrelated changes.
 
 Expected output:
@@ -21,4 +22,3 @@ Expected output:
 - recommended fail-closed behavior
 """
 model_reasoning_effort = "high"
-

@@ -13,6 +13,7 @@ Monitor interval: 5 minutes unless overridden
 - Record every check with timestamp, worktree state, recent commits, changed areas, lane status, correction queue, gates, completion signal, open blockers, and no-change streak.
 - Convert reviewer findings into blocking corrections when they can affect behavior, security, data integrity, parity, or release gates.
 - Treat Done as pending until gates and final review pass.
+- Reject Done unless the executor documented five consecutive clean stabilization cycles after it first found no pending work, with reset conditions respected.
 
 ## Checks
 
@@ -25,7 +26,7 @@ Monitor interval: 5 minutes unless overridden
 - Correction queue:
 - Gates:
 - Completion signal:
+- Final stabilization wait:
 - Open blockers:
 - No-change streak:
 - Codex action:
-

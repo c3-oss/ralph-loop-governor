@@ -74,5 +74,5 @@ Final review should reject Done if:
 - write paths silently skip required events;
 - filters differ across API and UI;
 - E2E evidence does not show a real action flowing into the read surface;
-- the correction queue has any open blocking item.
-
+- the correction queue has any open blocking item;
+- the executor did not document five consecutive clean stabilization cycles of `sleep 180 seconds` before Done.

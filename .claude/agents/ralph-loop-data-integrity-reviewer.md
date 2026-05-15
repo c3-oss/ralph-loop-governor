@@ -20,6 +20,7 @@ Use this agent for read-only review of data integrity after Ralph implements dat
 - Default to read-only. Do not edit unless explicitly assigned a write scope.
 - Identify paths where data can be lost, partially committed, silently truncated, duplicated, corrupted, or acknowledged before durable storage is proven.
 - Check transactionality, replay safety, cleanup gates, schema drift behavior, validation, and migration compatibility.
+- When reviewing final readiness, treat missing or shorter final stabilization evidence as blocking: five cycles of `sleep 180 seconds`, then reread correction queue, gates, status, git status, and recent commits.
 - Expect other agents may be editing in parallel; do not revert unrelated work.
 
 ## Expected Output
@@ -28,4 +29,3 @@ Use this agent for read-only review of data integrity after Ralph implements dat
 - exact files/functions
 - tests needed to prove rejection, rollback, and replay behavior
 - residual risks if the implementation passes review
-
