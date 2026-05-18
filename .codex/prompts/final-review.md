@@ -7,6 +7,8 @@ Check:
 - every lane has evidence;
 - no blocking correction remains open;
 - gates are green or explicitly classified;
+- fallback substitutions are explicitly classified and do not hide a required gate failure;
+- any downstream or exploratory work is either accepted by its lane gate or marked as out-of-sequence WIP;
 - final stabilization wait evidence shows five consecutive clean cycles of `sleep 180 seconds`;
 - security and data-integrity reviewers have no critical unresolved findings;
 - the worktree state is documented;

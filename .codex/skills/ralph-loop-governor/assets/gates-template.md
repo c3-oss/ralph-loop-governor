@@ -22,6 +22,22 @@ Add domain-specific gates required by local architecture, release, security, or 
 | --- | --- | --- | --- |
 | `<end-to-end command>` | when-applicable | not-run | |
 
+## Fallback Commands
+
+Fallbacks record useful focused commands when a wrapper fails for environmental reasons. They do not replace required gates unless the governor explicitly classifies the substitution.
+
+| Command | Replaces | Last Result | Classification |
+| --- | --- | --- | --- |
+| `<focused fallback command>` | `<required command>` | not-run | blocking / acceptable-with-reason |
+
+## Audit Classification
+
+Use when dependency, security, or production-readiness audits produce findings.
+
+| Finding | Severity | Exposure | Classification | Notes |
+| --- | --- | --- | --- | --- |
+| `<package or finding>` | `<severity>` | runtime / production / dev-tooling / transitive-only | blocking / acceptable-with-reason / follow-up-risk | |
+
 ## Done Check
 
 - [ ] Worktree state documented.
@@ -29,5 +45,6 @@ Add domain-specific gates required by local architecture, release, security, or 
 - [ ] No open blocking corrections.
 - [ ] Required domain gates passed or blockers are documented.
 - [ ] Security/dependency audit output classified when applicable.
+- [ ] Fallback substitutions, if any, are explicitly classified.
 - [ ] Final stabilization wait completed: five consecutive clean cycles of `sleep 180 seconds`, at least 15 minutes total.
 - [ ] Final Codex review completed.

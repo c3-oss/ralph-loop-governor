@@ -11,7 +11,9 @@ Monitor interval: 5 minutes unless overridden
 
 - Stay read-only with respect to implementation files while Ralph is active and making progress.
 - Record every check with timestamp, worktree state, recent commits, changed areas, lane status, correction queue, gates, completion signal, open blockers, and no-change streak.
+- Update `status.md`, `correction-queue.md`, `gates.md`, and lane evidence when the check changes the run state.
 - Convert reviewer findings into blocking corrections when they can affect behavior, security, data integrity, parity, or release gates.
+- Mark downstream or exploratory work as out-of-sequence WIP when prerequisite lanes still have blocking corrections.
 - Treat Done as pending until gates and final review pass.
 - Reject Done unless the executor documented five consecutive clean stabilization cycles after it first found no pending work, with reset conditions respected.
 
@@ -23,6 +25,7 @@ Monitor interval: 5 minutes unless overridden
 - Recent commits:
 - Changed areas:
 - Lane evidence/status:
+- Out-of-sequence work:
 - Correction queue:
 - Gates:
 - Completion signal:

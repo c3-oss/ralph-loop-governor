@@ -7,7 +7,7 @@ description: Use when preparing, launching, monitoring, steering, or post-review
 
 Use this skill to turn a large implementation request into a governed Ralph Loop: Codex plans, monitors, reviews, writes blocking corrections, and runs final gates; Claude/Ralph does long-running implementation throughput.
 
-This is code review and steering, not passive status tracking. Codex must actively review executor code with focused subagents, convert important findings into blocking corrections, and steer the executor until the lane contract and gates are satisfied.
+This is code review and steering, not passive status tracking. Codex must actively review executor code with focused subagents, convert important findings into blocking corrections, and steer the executor until the lane contract and gates are satisfied. If Codex is only watching commits land, it is not using this skill correctly.
 
 ## User Invocation
 
@@ -23,7 +23,9 @@ or:
 $ralph-loop-governor prepare a Ralph Loop for <feature>
 ```
 
-Do not require the user to ask for lanes, prompts, status files, correction queues, gates, evidence templates, subagents, or executor commands. Infer and create those artifacts from the feature request. If the request is too vague to produce safe lanes, ask one concise clarifying question.
+Do not require the user to ask for lanes, prompts, status files, correction queues, gates, evidence templates, subagents, or executor commands. Infer and create those artifacts from the feature request. Use a longer user prompt only when the user needs to override defaults such as monitor interval, required domain docs, or gate commands.
+
+If the request is too vague to produce safe lanes, ask one concise clarifying question. Otherwise, make conservative assumptions and proceed.
 
 ## Core Contract
 
@@ -31,10 +33,12 @@ Do not require the user to ask for lanes, prompts, status files, correction queu
 - Ralph must not be the final judge of its own Done.
 - Codex must review code with subagents during the run, not only after Ralph claims completion.
 - Codex must steer Ralph through `correction-queue.md`, `ralph-loop-prompt.md`, and gate updates whenever reviewers find blockers.
-- Domain-specific skills own product architecture, path ownership, invariants, and validation. Import them into the prompt when applicable.
+- This skill owns Ralph Loop process artifacts and gates. Domain-specific skills own product architecture, path ownership, invariants, and validation.
+- When a feature matches another skill or local specialist, import that guidance into the Ralph prompt rather than restating domain rules here.
 - Convert fuzzy goals into lane invariants, acceptance criteria, and tests.
+- Keep lane order explicit: downstream work can exist as WIP, but it does not count as accepted lane evidence while prerequisite blockers remain open.
 - Every blocking finding becomes a correction with an ID, status, owner, and evidence.
-- Final completion requires gates and evidence, not just a clean worktree.
+- Final completion requires gates, evidence, classified fallbacks, and accepted lane state, not just a clean worktree.
 - Ralph must not output `RALPH_DONE` immediately after it thinks the queue is empty. A final stabilization wait is mandatory; see "Executor Completion Stabilization" below.
 
 ## Setup Workflow
@@ -53,9 +57,11 @@ docs/roadmap/<feature>/
     lane-02.md
 ```
 
+Use the roadmap directory for active run artifacts: the executor prompt, status, correction queue, gates, and lane evidence. Durable subsystem references belong in the target repository's normal documentation area and should be linked from the executor prompt rather than duplicated. Historical run artifacts are evidence, not canonical requirements, unless the user is explicitly investigating a prior run.
+
 3. Generate a kickoff prompt from `assets/ralph-loop-prompt-template.md`.
 4. State that Claude Code must have the Anthropic-verified Ralph Loop plugin installed: https://claude.com/plugins/ralph-loop.
-5. Give the user an exact Claude command:
+5. Give the user an exact Claude command. Quote any natural-language prompt:
 
 ```text
 /ralph-loop:ralph-loop "@docs/roadmap/<feature>/ralph-loop-prompt.md" --max-iterations 30 --completion-promise RALPH_DONE
@@ -72,10 +78,11 @@ If the user's Claude Code exposes the plugin command as `/ralph-loop`, tell them
 ## Monitoring Workflow
 
 - Write the monitor outside the target repo unless the user asks otherwise, for example `~/workspace/<repo>-<feature>-ralph-loop-monitor.md`.
-- When the user reports "Ralph started", "Loop started", or equivalent, enter the active monitor loop immediately.
+- When the user reports "Ralph started", "Loop started", or equivalent, enter the active monitor loop immediately. Do not only record the start.
 - Use a 5-minute interval by default unless the user requested a different interval. The interval is a real idle wait: stop monitoring work, run no intermediate checks, send no progress updates, and do no parallel review or implementation work until the wait expires.
-- Each check records timestamp, `git status --short --branch`, recent commits, changed areas, lane evidence/status, correction queue, gates, `RALPH_DONE` signal, open blockers, and no-change streak.
-- After material implementation changes or completed lanes, spawn focused read-only reviewer subagents for changed domains.
+- Each check records in the external monitor: timestamp, `git status --short --branch`, recent commits, changed areas, lane evidence/status, correction queue, gates, `RALPH_DONE` signal, open blockers, and no-change streak.
+- Update `status.md`, `correction-queue.md`, and gate/evidence artifacts as needed after each check.
+- After material implementation changes or completed lanes, spawn focused read-only reviewer subagents for changed domains. Use the strongest available reviewer model for high-risk security, data integrity, read-surface, and final gate reviews when available.
 - If Ralph is making progress, do not edit implementation files.
 - If reviewer findings or Codex review reveal blockers, immediately add or update entries in `correction-queue.md` with concrete acceptance criteria and update `ralph-loop-prompt.md` when the executor needs stronger steering.
 - Keep treating Ralph as active until `RALPH_DONE` is detected, the user stops the run, or three configured idle checks show no implementation changes and final gates begin.
@@ -113,6 +120,8 @@ Default reviewer mode is read-only. Assign write scopes only after Ralph has sto
 
 Reviewer findings are not advisory notes to remember later. Every finding that can break product behavior, security, data integrity, parity, or release gates must become a `CQ-*` correction before the next Ralph restart or final review.
 
+Pair these process reviewers with target-repository domain specialists when they exist. The Ralph Loop reviewers own process risk, gates, and evidence; domain specialists own local invariants and product semantics.
+
 ## Correction Queue Rules
 
 Use `assets/correction-queue-template.md` for formatting.
@@ -121,7 +130,7 @@ Every blocking correction needs:
 
 - stable ID such as `CQ-001`;
 - severity and blocking flag;
-- concrete file paths or commands where known;
+- concrete file paths or commands;
 - product, security, data, or release risk;
 - required fix;
 - acceptance criteria;
@@ -144,7 +153,7 @@ Start with repository-local commands discovered from guidance, package manifests
 - end-to-end tests;
 - whitespace diff check.
 
-Classify any skipped or failed gate as blocking, acceptable with reason, or follow-up risk.
+Record useful fallback commands when a repository wrapper fails for environmental reasons, but do not let fallback commands silently replace required gates. Classify any skipped or failed gate as blocking, acceptable with reason, or follow-up risk. When a dependency or security audit exists, classify findings by runtime, production, development tooling, or transitive-only exposure before declaring Done.
 
 ## Architect Intervention
 

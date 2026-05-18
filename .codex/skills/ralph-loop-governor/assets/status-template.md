@@ -25,6 +25,13 @@ Stabilization last check:
 | --- | --- | --- | --- | --- |
 | 01 | Ralph | open | | evidence/lane-01.md |
 
+## Out-Of-Sequence Work
+
+Use this section when exploratory or downstream work exists before its prerequisite lane is accepted. Do not count it as lane evidence until blockers are closed and the governor reclassifies it.
+
+| Area | Status | Why Not Accepted | Next Action |
+| --- | --- | --- | --- |
+
 ## Open Blocking Corrections
 
 | ID | Severity | Owner | Summary |

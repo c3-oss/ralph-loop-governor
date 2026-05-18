@@ -13,6 +13,7 @@ Codex will actively review your code with focused subagents and steer this run t
 - <matching Codex skills>
 - <canonical architecture or product docs>
 - <feature-specific docs>
+- <historical run artifacts only when explicitly relevant>
 
 ## Product Contract
 
@@ -32,6 +33,8 @@ At the start of each iteration:
 - identify the first incomplete lane or open correction;
 - reread `correction-queue.md` and treat every `Blocking: yes` correction as higher priority than new feature work;
 - continue from there without restarting completed work;
+- do not start downstream lanes that depend on an unaccepted lane with open blocking corrections;
+- if exploratory out-of-sequence work already exists, mark it as WIP rather than accepted lane evidence;
 - preserve user changes and unrelated agent changes;
 - do not touch generated directories by hand.
 
@@ -52,6 +55,7 @@ Keep these files current:
 - Close reviewer findings with code, tests, and evidence; do not mark a correction closed because the implementation "looks right".
 - Do not leave destructive behavior guarded only by optimistic assumptions.
 - If a command cannot run, document the blocker and add a reproducible fallback when possible.
+- Keep status, gates, correction queue, and lane evidence current after each meaningful change.
 
 ## Required Gates
 
@@ -91,4 +95,4 @@ Only satisfy the completion promise when the statement is true. This run assumes
 <promise>RALPH_DONE</promise>
 ```
 
-when every lane is implemented, every blocking correction is closed with evidence, required gates are green or classified, the final stabilization wait has completed, and the worktree state is documented.
+when every accepted lane is implemented, every blocking correction is closed with evidence, out-of-sequence work is either accepted by its prerequisite gate or marked as WIP, required gates and fallbacks are green or classified, the final stabilization wait has completed, and the worktree state is documented.

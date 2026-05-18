@@ -16,6 +16,7 @@ This repository packages reusable AI workflow guidance. Keep the content generic
 - Keep instructions direct, concrete, and easy to scan.
 - Do not embed secrets, machine-local paths, customer names, or internal repository names.
 - Do not add product-specific gates as defaults. Use placeholders and tell users to replace them with local commands.
+- When promoting lessons from a target repository, keep only reusable process rules here. Leave product invariants, local commands, and domain-specific reviewers in that target repository.
 - When changing `.codex/skills/`, `.codex/agents/`, `.claude/agents/`, or this file, update `CLAUDE.md` if Claude-facing guidance changes.
 - Do not duplicate skills under `.claude/skills/`.
 

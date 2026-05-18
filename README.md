@@ -8,7 +8,8 @@ The workflow is intentionally tool-light:
 - Claude/Ralph owns long-running implementation throughput.
 - Reviewer agents inspect the work during the run, not only after the executor claims Done.
 - Blocking findings become correction queue items with acceptance criteria and evidence.
-- Done requires lane evidence, closed corrections, gate results, and a final stabilization wait with five clean cycles of `sleep 180 seconds`.
+- Done requires lane evidence, closed corrections, classified gate results, accepted lane state, and a final stabilization wait with five clean cycles of `sleep 180 seconds`.
+- If Codex is only watching commits land, the governor loop is not being followed.
 
 ## What Is Included
 
@@ -31,6 +32,8 @@ docs/
 ## Install In Another Repository
 
 Copy the `.codex/`, `.claude/`, `AGENTS.md`, and `CLAUDE.md` files into a target repository, then adjust the target repo guidance and gate commands.
+
+Keep the package generic when adapting it: put local product rules in local domain skills or specialist agents, then link those from generated Ralph prompts.
 
 ## Prerequisites
 
@@ -95,7 +98,11 @@ When corrections are needed:
 
 - Replace placeholder gates in `gates.md` with the target repository's real install, build, test, lint, security, and E2E commands.
 - Add domain specialists only when the target repository has domain-specific invariants.
+- Keep roadmap artifacts for active run state. Put durable subsystem guidance in the target repository's normal documentation area and link it from the Ralph prompt.
+- Treat historical run artifacts as evidence, not canonical requirements, unless the user is explicitly investigating a prior run.
 - Keep reviewer agents read-only by default.
+- Make reviewer findings feed steering: write blocking findings to `correction-queue.md`, update status and gates, then restart or steer Ralph.
+- Classify fallback gates and audit findings before declaring Done.
 - Keep `.codex/skills/` as the canonical skill home. `.claude/agents/` mirrors specialists for Claude Code.
 - Do not treat an executor's Done signal as sufficient. The governor must verify evidence and gates.
 - Reject Done without documented final stabilization wait evidence: five consecutive clean cycles, at least 15 minutes total, with reset conditions respected.
