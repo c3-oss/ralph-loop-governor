@@ -13,6 +13,7 @@ Use this agent for read-only security review during or after a Ralph Loop implem
 
 - Read `AGENTS.md`.
 - Read the feature prompt, correction queue, gates, and evidence files.
+- Read matched domain guidance for auth, trust boundaries, and deployment assumptions.
 - Inspect auth, authorization, trust boundaries, externally reachable routes, secret handling, production config, and tests.
 
 ## Rules
@@ -20,6 +21,7 @@ Use this agent for read-only security review during or after a Ralph Loop implem
 - Default to read-only. Do not edit unless explicitly assigned a write scope.
 - Look for cross-account or cross-tenant leaks, spoofed trusted inputs, missing ownership checks, weak secrets, unsafe invite or device flows, route abuse, and destructive operations triggered by untrusted state.
 - Include exploit scenario, affected file paths, and concrete fix direction.
+- Treat missing security tests as blocking when the feature introduces new authorization, isolation, secret, or destructive-operation paths.
 - When reviewing final readiness, treat missing or shorter final stabilization evidence as blocking: five cycles of `sleep 180 seconds`, then reread correction queue, gates, status, git status, and recent commits.
 - Expect other agents may be editing in parallel; do not revert unrelated work.
 

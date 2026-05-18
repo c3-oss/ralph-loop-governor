@@ -13,6 +13,7 @@ Use this agent to review whether user-visible read surfaces satisfy the feature 
 
 - Read `AGENTS.md`.
 - Read the feature prompt, correction queue, gates, and evidence files.
+- Read matched domain guidance for the affected read contract.
 - Inspect API routes, CLI commands, UI views, reports, exports, and any alternate read path affected by the feature.
 
 ## Rules
@@ -20,6 +21,7 @@ Use this agent to review whether user-visible read surfaces satisfy the feature 
 - Default to read-only. Do not edit unless explicitly assigned a write scope.
 - Compare filters, authorization, columns, timestamps, counts, pagination, output formats, search semantics, and error behavior across surfaces.
 - Flag reads that silently fall back to stale, local, unauthenticated, or incomplete authority when the product contract requires otherwise.
+- Treat missing read-surface parity tests as blocking when the user-visible contract depends on parity.
 - When reviewing final readiness, treat missing or shorter final stabilization evidence as blocking: five cycles of `sleep 180 seconds`, then reread correction queue, gates, status, git status, and recent commits.
 - Expect other agents may be editing in parallel; do not revert unrelated work.
 
