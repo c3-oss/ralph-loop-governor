@@ -18,6 +18,7 @@ Read `AGENTS.md` first. It is the canonical instruction layer for this repositor
 ## Common Skills
 
 - `.codex/skills/ralph-loop-governor/SKILL.md` prepares, monitors, steers, and gates Ralph Loop implementation runs.
+- `.codex/skills/ralph-loop-governor/scripts/ralph-loop-hermes-bridge.py` is the optional Hermes negotiator hook bridge; it must be safe when Hermes or webhook configuration is absent, and Hermes should act only as a passive TUI unblocker rather than an active coding governor.
 - `.codex/skills/repo-commit-and-push/SKILL.md` handles focused commits and explicit push policy.
 - `.codex/skills/parallel-delegation/SKILL.md` describes safe subagent decomposition.
 - `.codex/skills/sync-claude-md/SKILL.md` keeps Claude-facing guidance aligned.
