@@ -1,0 +1,48 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/skills/ralph-loop-governor/scripts/ralph-loop-hermes-bridge.py --source claude-code --event Notification --project <feature> --session <tmux-session-or-pane> --status-file docs/roadmap/<feature>/status.md --correction-queue docs/roadmap/<feature>/correction-queue.md --gates-file docs/roadmap/<feature>/gates.md"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/skills/ralph-loop-governor/scripts/ralph-loop-hermes-bridge.py --source claude-code --event PermissionRequest --project <feature> --session <tmux-session-or-pane> --status-file docs/roadmap/<feature>/status.md --correction-queue docs/roadmap/<feature>/correction-queue.md --gates-file docs/roadmap/<feature>/gates.md"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/skills/ralph-loop-governor/scripts/ralph-loop-hermes-bridge.py --source claude-code --event PostToolUseFailure --project <feature> --session <tmux-session-or-pane> --status-file docs/roadmap/<feature>/status.md --correction-queue docs/roadmap/<feature>/correction-queue.md --gates-file docs/roadmap/<feature>/gates.md"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .codex/skills/ralph-loop-governor/scripts/ralph-loop-hermes-bridge.py --source claude-code --event Stop --project <feature> --session <tmux-session-or-pane> --status-file docs/roadmap/<feature>/status.md --correction-queue docs/roadmap/<feature>/correction-queue.md --gates-file docs/roadmap/<feature>/gates.md"
+          }
+        ]
+      }
+    ]
+  }
+}

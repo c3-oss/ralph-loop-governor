@@ -18,7 +18,7 @@ The workflow is intentionally tool-light:
   agents/                         # Codex reviewer subagents
   prompts/                        # Reusable kickoff/restart/review prompts
   skills/
-    ralph-loop-governor/          # Main workflow skill and templates
+    ralph-loop-governor/          # Main workflow skill, templates, optional bridge scripts
     repo-commit-and-push/         # Generic commit/push policy
     parallel-delegation/          # Subagent decomposition policy
     sync-claude-md/               # Keep Claude-facing guidance aligned
@@ -26,6 +26,7 @@ The workflow is intentionally tool-light:
   agents/                         # Claude Code mirrors of the reviewer agents
 docs/
   ralph-loop-governor.md          # Full operating model
+  hermes-negotiator-bridge.md     # Optional Hermes hook bridge
   examples/generic-feature-run.md # Sanitized example run
 ```
 
@@ -85,6 +86,8 @@ Then run the executor in Claude/Ralph:
 ```
 
 This command requires the [Ralph Loop plugin](https://claude.com/plugins/ralph-loop) in Claude Code.
+
+Optional: if Hermes is installed and you want it to negotiate stalls between the executor and governor, configure the hook bridge in [Hermes Negotiator Bridge](docs/hermes-negotiator-bridge.md). Without Hermes or a webhook URL, the bridge is a no-op and the manual copy/paste workflow still works.
 
 Before the executor emits `RALPH_DONE`, it must complete a final stabilization wait: five consecutive clean cycles of `sleep 180 seconds`, then reread correction queue, gates, status, `git status --short --branch`, and recent commits. Any open blocker, failed gate, stale evidence, new commit, or unexplained dirty worktree resets the count to zero.
 

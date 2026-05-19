@@ -1,0 +1,16 @@
+# Optional Codex-side notification hook for Ralph Loop governor runs.
+# Merge this into the Codex config used for the run, then replace placeholders.
+# If RALPH_HERMES_WEBHOOK_URL and .ralph-loop/hermes-webhook-url are absent,
+# the bridge exits 0 and the manual workflow is unchanged.
+
+notify = [
+  "python3",
+  ".codex/skills/ralph-loop-governor/scripts/ralph-loop-hermes-bridge.py",
+  "--source", "codex",
+  "--event", "agent-turn-complete",
+  "--project", "<feature>",
+  "--session", "<codex-session-or-pane>",
+  "--status-file", "docs/roadmap/<feature>/status.md",
+  "--correction-queue", "docs/roadmap/<feature>/correction-queue.md",
+  "--gates-file", "docs/roadmap/<feature>/gates.md",
+]

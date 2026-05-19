@@ -38,6 +38,25 @@ Correction restart:
 
 Keep natural-language prompts quoted so shell punctuation inside the prompt cannot split the command or drop `--max-iterations` / `--completion-promise`.
 
+## Optional Hermes Negotiator
+
+Hermes can sit between the Claude/Ralph executor and the Codex governor as an optional negotiator. It is useful when the manual flow would otherwise require copying a `COMANDO_RALPH:` instruction from Codex, pasting it into Claude, returning to Codex, and reporting that Ralph started.
+
+Use the bridge only as optional assistance:
+
+- If Hermes and a webhook URL are configured, hooks can POST stall, permission, failure, or early-stop events to Hermes.
+- If Hermes is absent or no webhook URL is configured, the bridge exits 0 and the normal manual workflow remains unchanged.
+- Hermes may inspect roadmap state and propose or send a bounded steering message, but final acceptance still belongs to the governor.
+- Hermes must not close corrections without evidence or accept `RALPH_DONE` on behalf of Codex.
+
+Configure it with `docs/hermes-negotiator-bridge.md` and these assets:
+
+```text
+.codex/skills/ralph-loop-governor/scripts/ralph-loop-hermes-bridge.py
+.codex/skills/ralph-loop-governor/assets/hermes-bridge-claude-settings.fragment.json
+.codex/skills/ralph-loop-governor/assets/hermes-bridge-codex-notify.fragment.toml
+```
+
 ## Codex Monitor Loop
 
 Codex should write a monitor file outside the repo unless the user asks otherwise:

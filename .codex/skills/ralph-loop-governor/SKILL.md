@@ -69,6 +69,8 @@ Use the roadmap directory for active run artifacts: the executor prompt, status,
 
 If the user's Claude Code exposes the plugin command as `/ralph-loop`, tell them to use that command name with the same prompt and flags.
 
+Optional Hermes path: when Hermes is available and the user wants unattended stall negotiation, configure `scripts/ralph-loop-hermes-bridge.py` with the Claude settings and Codex notify fragments in `assets/`. The bridge must be optional: missing Hermes or a missing webhook URL is a successful no-op, and the manual copy/paste flow still works.
+
 6. If restarting Ralph to consume corrections, use a quoted prompt:
 
 ```text
@@ -77,6 +79,7 @@ If the user's Claude Code exposes the plugin command as `/ralph-loop`, tell them
 
 ## Monitoring Workflow
 
+- If the optional Hermes bridge is configured, treat Hermes as a negotiator between the executor and governor. It may alert on early stops, blocked language, permission requests, tool failures, or `COMANDO_RALPH:` handoffs. It must not replace final gatekeeping, correction evidence, or `RALPH_DONE` acceptance.
 - Write the monitor outside the target repo unless the user asks otherwise, for example `~/workspace/<repo>-<feature>-ralph-loop-monitor.md`.
 - When the user reports "Ralph started", "Loop started", or equivalent, enter the active monitor loop immediately. Do not only record the start.
 - Use a 5-minute interval by default unless the user requested a different interval. The interval is a real idle wait: stop monitoring work, run no intermediate checks, send no progress updates, and do no parallel review or implementation work until the wait expires.

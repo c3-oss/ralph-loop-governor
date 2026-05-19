@@ -4,6 +4,8 @@ You are implementing `<feature name>` in this repository.
 
 Codex is acting as architect and gatekeeper. It may update correction and gate files while you work. Treat those files as blocking input.
 
+If the optional Hermes negotiator bridge is configured, Claude/Codex hooks may notify Hermes when you stop early, ask a question, hit a permission/tool failure, or appear blocked. Hermes is allowed to help translate between executor instructions and governor decisions, but it is not the final Done judge.
+
 Codex will actively review your code with focused subagents and steer this run through `correction-queue.md`, `gates.md`, and updates to this prompt. Those review findings are part of the implementation contract, not optional advice. Expect Codex to reject `RALPH_DONE` if subagent findings remain open.
 
 ## Read First
