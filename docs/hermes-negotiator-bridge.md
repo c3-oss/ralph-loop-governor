@@ -2,6 +2,8 @@
 
 The Hermes negotiator bridge makes Hermes optional in a Ralph Loop run. When Hermes is available and a webhook URL is configured, Claude/Ralph and Codex hooks can send attention-worthy events to Hermes. When Hermes is absent, the hook script exits successfully and the manual workflow is unchanged.
 
+Hermes is a passive TUI unblocker, not a second active coding governor. Its job is to keep the existing Claude/Ralph executor and Codex governor able to run when a user-like TUI action is required. It should make the smallest safe unblock action, preserve the intended completeness of the work, and hand control back to the normal governor/executor loop.
+
 ## Flow
 
 ```text
@@ -10,22 +12,23 @@ Codex governor prepares the run
   -> Claude/Codex hooks call ralph-loop-hermes-bridge.py on rare attention events
   -> bridge classifies the event and suppresses duplicates
   -> if a Hermes webhook is configured, POST a compact negotiator payload
-  -> Hermes inspects roadmap state and negotiates the next unblock step
+  -> Hermes performs the minimum safe unblock action when the TUI flow is blocked
   -> executor and governor continue; final acceptance still belongs to the governor
 ```
 
-Hermes is a negotiator, not the final judge. It may translate a stuck executor message into a concrete governor decision, or translate a governor correction into a bounded executor instruction. It must not accept `RALPH_DONE`, close corrections without evidence, or silently replace the final Codex/governor gate.
+Hermes may answer a blocking TUI prompt, retry after a usage/rate limit, restart or continue Ralph after an iteration limit, or notify Codex when the executor is stopped and Codex can still govern the next step. It must not proactively review or correct code, choose the next implementation slice merely because a commit landed, accept `RALPH_DONE`, close corrections without evidence, or silently replace Codex/governor steering and final gates.
 
 ## What the bridge alerts on
 
-The bridge only forwards events that usually need attention:
+The bridge only forwards events that usually need TUI-level unblocking:
 
-- Claude/Ralph `Stop` without `RALPH_DONE`.
-- Claude Code `Notification`, `PermissionRequest`, `PostToolUseFailure`, or `SubagentStop`.
+- Claude/Ralph `Stop` without `RALPH_DONE`, especially max-iteration or early-stop cases that need a continue/restart handoff.
+- Claude Code `Notification`, `PermissionRequest`, `PostToolUseFailure`, or `SubagentStop` when the TUI is waiting for user input.
 - Codex `agent-turn-complete` or stop-like events that contain blocked/stuck/waiting language.
+- Usage, rate, quota, or retry-limit messages that require waiting and trying again later.
 - Messages containing decision markers such as `blocked`, `waiting for`, `need input`, `needs governor`, `accept or reject`, or `COMANDO_RALPH`.
 
-Normal progress, routine tool use, and a proper `<promise>RALPH_DONE</promise>` stop are silent.
+Normal progress, routine tool use, newly landed commits, closed corrections, and a proper `<promise>RALPH_DONE</promise>` stop are silent.
 
 ## Files
 
@@ -88,20 +91,23 @@ The bridge posts JSON shaped like this:
 }
 ```
 
-Hermes should use the payload as a bounded triage prompt:
+Hermes should use the payload as a bounded TUI-unblock prompt:
 
-1. Inspect the status, correction queue, gates, and recent transcript if available.
-2. Decide whether the blocker belongs to the executor, the governor, or the human user.
+1. Inspect only enough status, correction queue, gates, and recent transcript context to understand why the TUI flow stopped.
+2. Decide whether a user-like unblock action is required now, or whether Codex/Ralph can continue without Hermes.
 3. Produce one of:
-   - an exact executor steering message;
-   - an exact governor/Codex decision request;
-   - a concise user-facing multiple-choice question;
-   - a no-op if the event is stale or already resolved.
+   - an answer to the blocking TUI prompt, choosing the most complete safe delivery option when the prompt asks for scope;
+   - a retry/continue action after a usage/rate/quota limit and appropriate wait;
+   - a restart/continue handoff for Ralph after max iterations or early stop;
+   - a concise notification to Codex when Codex can govern the next executor step;
+   - a concise user-facing multiple-choice question only when the decision cannot be made safely;
+   - a no-op if the event is stale, already resolved, or merely normal progress.
 4. Avoid recursion. Do not trigger another hook storm from the negotiation output.
+5. Do not use the bridge to perform code review, open new corrections, select the next implementation slice, or otherwise replace Codex governance.
 
 ## Safety guardrails
 
 - Duplicate idempotency keys are suppressed for 10 minutes by default.
 - Webhook delivery failures are recorded locally and do not fail the executor hook.
 - Missing Hermes configuration is a successful no-op.
-- The bridge is alert/negotiation infrastructure. It does not replace correction evidence, gates, final stabilization, or final governor acceptance.
+- The bridge is passive TUI-unblock infrastructure. It does not replace correction evidence, gates, final stabilization, active Codex governance, or final governor acceptance.

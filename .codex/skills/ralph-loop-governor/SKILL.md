@@ -69,7 +69,7 @@ Use the roadmap directory for active run artifacts: the executor prompt, status,
 
 If the user's Claude Code exposes the plugin command as `/ralph-loop`, tell them to use that command name with the same prompt and flags.
 
-Optional Hermes path: when Hermes is available and the user wants unattended stall negotiation, configure `scripts/ralph-loop-hermes-bridge.py` with the Claude settings and Codex notify fragments in `assets/`. The bridge must be optional: missing Hermes or a missing webhook URL is a successful no-op, and the manual copy/paste flow still works.
+Optional Hermes path: when Hermes is available and the user wants unattended TUI unblocking, configure `scripts/ralph-loop-hermes-bridge.py` with the Claude settings and Codex notify fragments in `assets/`. The bridge must be optional: missing Hermes or a missing webhook URL is a successful no-op, and the manual copy/paste flow still works. Hermes is a passive unblocker, not a second active coding governor: it should answer blocking TUI prompts, retry after usage/rate limits, or handle max-iteration/restart handoffs with the minimum safe action needed to keep Codex/Ralph running, then return control to the normal governor/executor loop.
 
 6. If restarting Ralph to consume corrections, use a quoted prompt:
 
@@ -79,7 +79,7 @@ Optional Hermes path: when Hermes is available and the user wants unattended sta
 
 ## Monitoring Workflow
 
-- If the optional Hermes bridge is configured, treat Hermes as a negotiator between the executor and governor. It may alert on early stops, blocked language, permission requests, tool failures, or `COMANDO_RALPH:` handoffs. It must not replace final gatekeeping, correction evidence, or `RALPH_DONE` acceptance.
+- If the optional Hermes bridge is configured, treat Hermes as a passive TUI unblocker between the executor and governor, not as a second active coding governor. It may alert on early stops, blocked language, permission requests, tool failures, usage/rate limits, max-iteration stops, or `COMANDO_RALPH:` handoffs. It may answer a blocking prompt, retry/continue after an appropriate wait, or hand restart state to Codex. It must not proactively review or correct code, choose the next implementation slice merely because a commit landed, replace final gatekeeping, close corrections without evidence, or accept `RALPH_DONE`.
 - Write the monitor outside the target repo unless the user asks otherwise, for example `~/workspace/<repo>-<feature>-ralph-loop-monitor.md`.
 - When the user reports "Ralph started", "Loop started", or equivalent, enter the active monitor loop immediately. Do not only record the start.
 - Use a 5-minute interval by default unless the user requested a different interval. The interval is a real idle wait: stop monitoring work, run no intermediate checks, send no progress updates, and do no parallel review or implementation work until the wait expires.
