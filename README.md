@@ -106,3 +106,16 @@ When corrections are needed:
 - Keep `.codex/skills/` as the canonical skill home. `.claude/agents/` mirrors specialists for Claude Code.
 - Do not treat an executor's Done signal as sufficient. The governor must verify evidence and gates.
 - Reject Done without documented final stabilization wait evidence: five consecutive clean cycles, at least 15 minutes total, with reset conditions respected.
+
+## License
+
+To the extent possible under law, [Caian Ertl][me] has waived __all copyright
+and related or neighboring rights to this work__. In the spirit of _freedom of
+information_, I encourage you to fork, modify, change, share, or do whatever
+you like with this project! [`^C ^V`][kopimi]
+
+[![License][cc-shield]][cc-url]
+
+[me]: https://github.com/upsetbit
+[cc-shield]: https://forthebadge.com/images/badges/cc-0.svg
+[cc-url]: http://creativecommons.org/publicdomain/zero/1.0
